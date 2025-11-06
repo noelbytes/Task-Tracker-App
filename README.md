@@ -50,6 +50,21 @@ Task-Tracker-App/
 │
 ├── frontend/                   # Angular Frontend
 │   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/    # Angular Components
+│   │   │   ├── guards/        # Auth Guards
+│   │   │   ├── interceptors/  # HTTP Interceptors
+│   │   │   ├── models/        # TypeScript Models
+│   │   │   └── services/      # Angular Services
+│   │   └── environments/      # Environment configs
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── package.json
+│
+├── docker-compose.yml          # Docker Compose configuration
+├── render.yaml                 # Render.com deployment config
+└── FREE_DEPLOYMENT_GUIDE.md    # Step-by-step deployment guide
+│   ├── src/
 │   │   └── app/
 │   │       ├── components/    # UI Components
 │   │       │   ├── login/
@@ -251,5 +266,99 @@ docker-compose up --build backend
 The application automatically creates:
 - 1 demo user
 - 5 sample tasks with different statuses and priorities
+
+## ☁️ Cloud Deployment (FREE)
+
+### Deploy to Render.com (Recommended)
+
+Deploy your entire stack for **$0/month** on Render:
+
+**Quick Deploy Steps:**
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Ready for deployment"
+   git push origin main
+   ```
+
+2. **Create Render Account**
+   - Sign up at https://render.com (free)
+   - Connect your GitHub account
+
+3. **Deploy Database**
+   - New → PostgreSQL → Free tier
+   - Note the connection details
+
+4. **Deploy Backend**
+   - New → Web Service → Connect repo
+   - Root Directory: `backend`
+   - Environment: Docker
+   - Add environment variables (see below)
+
+5. **Deploy Frontend**
+   - New → Static Site → Connect repo
+   - Root Directory: `frontend`
+   - Build: `npm ci && npm run build`
+   - Publish: `dist/frontend/browser`
+
+**Required Environment Variables:**
+```
+SPRING_PROFILES_ACTIVE=prod
+DATABASE_URL=<your-postgres-url>
+DB_USERNAME=<your-db-username>
+DB_PASSWORD=<your-db-password>
+JWT_SECRET=<generate-secure-secret>
+CORS_ORIGINS=<your-frontend-url>
+```
+
+**📚 Detailed Guides:**
+- **QUICK_DEPLOY.md** - 5-minute deployment guide
+- **FREE_DEPLOYMENT_GUIDE.md** - Complete guide with alternatives
+- **prepare-deployment.sh** - Pre-deployment checklist
+
+### Alternative Free Options
+- **Railway.app** - $5 free credit/month
+- **Vercel (Frontend)** + Render (Backend)
+- **Fly.io** - Free tier available
+
+See **FREE_DEPLOYMENT_GUIDE.md** for complete instructions!
+
+## 📚 Documentation
+
+- **API.md** - Complete API documentation
+- **DEPLOYMENT.md** - Deployment options
+- **FREE_DEPLOYMENT_GUIDE.md** - Free hosting step-by-step
+- **QUICK_DEPLOY.md** - 5-minute deployment
+- **DOCKER_GUIDE.md** - Docker usage guide
+- **PROJECT_SUMMARY.md** - Project overview
+
+## 🛠️ Tech Stack
+
+**Backend:**
+- Java 17
+- Spring Boot 3.2
+- Spring Security + JWT
+- Spring Data JPA
+- PostgreSQL / H2
+- Maven
+
+**Frontend:**
+- Angular 18
+- TypeScript
+- RxJS
+- Chart.js (ng2-charts)
+- Standalone Components
+
+**DevOps:**
+- Docker & Docker Compose
+- Nginx (production)
+- GitHub Actions ready
+
 ---
+
 **Happy Task Tracking! 📋✨**
+
+**Live Demo:** [Deploy yours for free!](https://render.com)
+**Author:** Built with ❤️ using Spring Boot & Angular
+
