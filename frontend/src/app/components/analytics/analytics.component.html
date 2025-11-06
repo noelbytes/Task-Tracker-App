@@ -1,0 +1,84 @@
+<div class="analytics-container">
+  <!-- Header -->
+  <div class="header">
+    <button class="btn-back" (click)="goBack()">← Back to Tasks</button>
+    <h1>📊 Task Analytics</h1>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading analytics...</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="!isLoading && stats">
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-content">
+        <h3>Total Tasks</h3>
+        <p class="stat-value">{{ stats.totalTasks }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card completed">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <h3>Completed</h3>
+        <p class="stat-value">{{ stats.completedTasks }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card pending">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <h3>Pending</h3>
+        <p class="stat-value">{{ stats.pendingTasks }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card time">
+      <div class="stat-icon">⏱️</div>
+      <div class="stat-content">
+        <h3>Avg. Completion Time</h3>
+        <p class="stat-value">{{ stats.averageCompletionTimeHours | number: '1.1-1' }}h</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-container" *ngIf="!isLoading && stats">
+    <div class="chart-card">
+      <h2>Task Status Distribution</h2>
+      <div class="chart-wrapper">
+        <canvas baseChart
+          [data]="pieChartData"
+          [options]="pieChartOptions"
+          type="pie">
+        </canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h2>Completion Status</h2>
+      <div class="chart-wrapper">
+        <canvas baseChart
+          [data]="barChartData"
+          [options]="barChartOptions"
+          type="bar">
+        </canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-section" *ngIf="!isLoading && stats && stats.totalTasks > 0">
+    <h2>Overall Progress</h2>
+    <div class="progress-bar">
+      <div class="progress-fill"
+           [style.width.%]="(stats.completedTasks / stats.totalTasks) * 100">
+        {{ ((stats.completedTasks / stats.totalTasks) * 100) | number: '1.0-0' }}%
+      </div>
+    </div>
+  </div>
+</div>
+

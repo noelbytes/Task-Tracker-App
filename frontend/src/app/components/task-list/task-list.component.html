@@ -1,0 +1,87 @@
+<div class="task-list-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-content">
+      <h1>📋 Task Tracker</h1>
+      <div class="user-info">
+        <span>Welcome, {{ currentUser }}</span>
+        <button class="btn-analytics" (click)="navigateToAnalytics()">📊 Analytics</button>
+        <button class="btn-logout" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="🔍 Search tasks..."
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        class="search-input">
+    </div>
+
+    <div class="filters">
+      <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="ALL">All Status</option>
+        <option value="TODO">To Do</option>
+        <option value="IN_PROGRESS">In Progress</option>
+        <option value="DONE">Done</option>
+      </select>
+
+      <select [(ngModel)]="filterPriority" (ngModelChange)="onFilterChange()" class="filter-select">
+        <option value="ALL">All Priority</option>
+        <option value="LOW">Low</option>
+        <option value="MEDIUM">Medium</option>
+        <option value="HIGH">High</option>
+      </select>
+
+      <button class="btn-add" (click)="openAddTaskForm()">+ Add Task</button>
+    </div>
+  </div>
+
+  <!-- Task Grid -->
+  <div class="task-grid" *ngIf="filteredTasks.length > 0">
+    <div class="task-card" *ngFor="let task of filteredTasks">
+      <div class="task-header">
+        <h3>{{ task.title }}</h3>
+        <span class="priority-badge" [ngClass]="getPriorityClass(task.priority)">
+          {{ task.priority }}
+        </span>
+      </div>
+
+      <p class="task-description">{{ task.description || 'No description' }}</p>
+
+      <div class="task-meta">
+        <span class="status-badge" [ngClass]="getStatusClass(task.status)">
+          {{ task.status | titlecase }}
+        </span>
+        <span class="task-date">
+          {{ task.createdAt | date: 'short' }}
+        </span>
+      </div>
+
+      <div class="task-actions">
+        <button class="btn-edit" (click)="openEditTaskForm(task)">✏️ Edit</button>
+        <button class="btn-delete" (click)="deleteTask(task)">🗑️ Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredTasks.length === 0">
+    <h2>No tasks found</h2>
+    <p>Create your first task to get started!</p>
+    <button class="btn-add-large" (click)="openAddTaskForm()">+ Create Task</button>
+  </div>
+
+  <!-- Task Form Modal -->
+  <app-task-form
+    *ngIf="showTaskForm"
+    [task]="selectedTask"
+    (taskSaved)="onTaskSaved()"
+    (cancelled)="closeTaskForm()">
+  </app-task-form>
+</div>
+
