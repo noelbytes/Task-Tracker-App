@@ -55,12 +55,18 @@ git push -u origin main
 | Key | Value |
 |-----|-------|
 | `SPRING_PROFILES_ACTIVE` | `prod` |
-| `JDBC_DATABASE_URL` | Paste Internal Database URL from Step 2, change `postgresql://` to `jdbc:postgresql://` |
+| `DATABASE_URL` | `jdbc:postgresql://<host>:5432/<db>` |
+| `DB_USERNAME` | `<db user>` |
+| `DB_PASSWORD` | `<db password>` |
 | `JWT_SECRET` | Copy from prepare-deployment.sh output |
 | `CORS_ORIGINS` | `https://tasktracker-frontend.onrender.com` (adjust if different) |
 
-   **Example:** If Internal Database URL is `postgresql://user:pass@host:5432/db`  
-   Then JDBC_DATABASE_URL should be `jdbc:postgresql://user:pass@host:5432/db`
+   Get these from your DB page:
+   - Internal URL example: `postgresql://user:pass@dpg-xxxx.<region>-postgres.render.com:5432/db`  
+   - Set:
+     - `DATABASE_URL = jdbc:postgresql://dpg-xxxx.<region>-postgres.render.com:5432/db`
+     - `DB_USERNAME = user`
+     - `DB_PASSWORD = pass`
 
 5. Click **"Create Web Service"**
 6. Wait 5-10 minutes for build
@@ -122,38 +128,17 @@ git push
 
 ## ⚠️ Important Notes
 
-### First Load is Slow
 - Free services sleep after 15 minutes
-- First request takes 30-60 seconds to wake up
-- After that, it's fast!
-
-### Free Database Expires
+- First request after sleep takes 30-60 seconds
 - Free PostgreSQL expires after 90 days
-- Render emails you before expiration
-- Can create new database and migrate data
-
-### Keep It Running
-- Services sleep after 15 min of inactivity
-- Each request wakes them up
-- Good for demos and portfolios
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Backend won't start?
-- Check logs: Dashboard → Backend Service → Logs
-- Verify all environment variables are set
-- Ensure DATABASE_URL is correct
-
-### Frontend can't connect to backend?
-- Check CORS_ORIGINS matches frontend URL exactly
-- Verify backend URL in environment.prod.ts
-- Wait for backend to wake up (30-60 seconds)
-
-### 502 Bad Gateway?
-- Backend is sleeping, wait 30-60 seconds and refresh
-- Or backend failed to start, check logs
+- Backend won't start? Check logs, verify DATABASE_URL/DB_USERNAME/DB_PASSWORD
+- Frontend can't connect? Check CORS and API URL
+- 502 Bad Gateway? Service waking up or failed startup
 
 ---
 
@@ -179,4 +164,3 @@ For alternatives and detailed explanations, see:
 ---
 
 **That's it! Your Task Tracker app is now live and accessible to anyone!** 🚀
-

@@ -31,14 +31,19 @@
   5. Add Environment Variables:
 
      SPRING_PROFILES_ACTIVE = prod
-     JDBC_DATABASE_URL = <paste Internal Database URL and change postgresql:// to jdbc:postgresql://>
+     DATABASE_URL = jdbc:postgresql://<host>:5432/<database>
+     DB_USERNAME = <database user>
+     DB_PASSWORD = <database password>
      JWT_SECRET = <run: openssl rand -base64 64>
      CORS_ORIGINS = https://tasktracker-frontend.onrender.com
 
-     Example: If Internal Database URL is:
-       postgresql://user:pass@host:5432/db
-     Then JDBC_DATABASE_URL should be:
-       jdbc:postgresql://user:pass@host:5432/db
+     Where to find values (Render DB page):
+       Internal Database URL example:
+         postgresql://user:pass@dpg-xxxx.<region>-postgres.render.com:5432/dbname
+       Set variables as:
+         DATABASE_URL = jdbc:postgresql://dpg-xxxx.<region>-postgres.render.com:5432/dbname
+         DB_USERNAME  = user
+         DB_PASSWORD  = pass
 
   6. Create Web Service (wait 5-10 min)
   7. COPY your backend URL
@@ -112,6 +117,7 @@
 Backend won't start?
   → Check logs: Dashboard → Service → Logs
   → Verify all environment variables are set
+  → Ensure DATABASE_URL is jdbc:postgresql://<host>:5432/<db> (no user:pass)
 
 Frontend can't connect?
   → Check CORS_ORIGINS matches frontend URL exactly
@@ -145,4 +151,3 @@ Choose your path:
   □ Complete: Read FREE_DEPLOYMENT_GUIDE.md
 
 Then deploy and share your app with the world! 🚀
-
