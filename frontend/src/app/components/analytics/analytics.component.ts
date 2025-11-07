@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TaskService } from '../../services/task.service';
-import { AIService } from '../../services/ai.service';
 import { TaskStats } from '../../models/task.model';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -18,10 +17,6 @@ export class AnalyticsComponent implements OnInit {
   stats: TaskStats | null = null;
   isLoading: boolean = true;
 
-  // AI features
-  aiInsight: string = '';
-  aiAvailable: boolean = false;
-  loadingInsight: boolean = false;
 
   // Pie Chart - Task Status Distribution
   public pieChartData: ChartConfiguration<'pie'>['data'] = {
@@ -75,48 +70,11 @@ export class AnalyticsComponent implements OnInit {
 
   constructor(
     private taskService: TaskService,
-    private aiService: AIService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
     this.loadStats();
-    this.checkAIAndLoadInsight();
-  }
-
-  /**
-   * Checks if AI is available and loads productivity insight.
-   */
-  checkAIAndLoadInsight(): void {
-    this.aiService.getAIStatus().subscribe({
-      next: (status: any) => {
-        this.aiAvailable = status.available;
-        if (this.aiAvailable) {
-          this.loadProductivityInsight();
-        }
-      },
-      error: () => {
-        this.aiAvailable = false;
-      }
-    });
-  }
-
-  /**
-   * Loads AI-generated productivity insight.
-   */
-  loadProductivityInsight(): void {
-    this.loadingInsight = true;
-    this.aiService.getProductivityInsight().subscribe({
-      next: (result: any) => {
-        this.aiInsight = result.insight;
-        this.loadingInsight = false;
-      },
-      error: (error: any) => {
-        console.error('Failed to load AI insight:', error);
-        this.aiInsight = '';
-        this.loadingInsight = false;
-      }
-    });
   }
 
   loadStats(): void {

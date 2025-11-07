@@ -80,24 +80,5 @@
       </div>
     </div>
   </div>
-
-  <!-- AI Productivity Insight -->
-  <div class="ai-insight-section" *ngIf="aiAvailable && !isLoading">
-    <div class="ai-insight-card">
-      <div class="ai-header">
-        <h2>🤖 AI Productivity Insight</h2>
-        <span class="ai-badge">Powered by AI</span>
-      </div>
-      <div class="ai-content" *ngIf="!loadingInsight && aiInsight">
-        <p>{{ aiInsight }}</p>
-      </div>
-      <div class="ai-loading" *ngIf="loadingInsight">
-        <p>🔄 Analyzing your productivity patterns...</p>
-      </div>
-      <div class="ai-empty" *ngIf="!loadingInsight && !aiInsight">
-        <p>Complete more tasks to get personalized insights!</p>
-      </div>
-    </div>
-  </div>
 </div>
 
