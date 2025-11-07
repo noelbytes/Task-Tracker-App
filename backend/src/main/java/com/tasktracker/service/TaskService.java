@@ -16,21 +16,49 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+/**
+ * Service layer for Task business logic.
+ *
+ * Handles all task-related operations including CRUD, filtering, and statistics.
+ * Ensures users can only access their own tasks.
+ * Converts between Entity and DTO objects to maintain separation of concerns.
+ */
+@Service  // Marks this as a Spring service component
 public class TaskService {
     
+    // Repository for task database operations
     @Autowired
     private TaskRepository taskRepository;
     
+    // Repository for user database operations
     @Autowired
     private UserRepository userRepository;
     
+    /**
+     * Retrieves the currently authenticated user from the security context.
+     *
+     * Extracts username from JWT token in SecurityContext and fetches User entity.
+     * This ensures all operations are performed in the context of the authenticated user.
+     *
+     * @return User entity of the authenticated user
+     * @throws RuntimeException if user not found in database
+     */
     private User getCurrentUser() {
+        // Get username from JWT token stored in SecurityContext
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     
+    /**
+     * Converts Task entity to TaskDTO for API response.
+     *
+     * DTOs prevent exposing internal entity structure and relationships.
+     * This provides better security and allows API changes without affecting database.
+     *
+     * @param task Task entity from database
+     * @return TaskDTO with mapped fields
+     */
     private TaskDTO convertToDTO(Task task) {
         TaskDTO dto = new TaskDTO();
         dto.setId(task.getId());
@@ -43,18 +71,32 @@ public class TaskService {
         return dto;
     }
     
+    /**
+     * Retrieves all tasks for the authenticated user.
+     *
+     * @return List of TaskDTOs belonging to current user
+     */
     public List<TaskDTO> getAllTasks() {
         User user = getCurrentUser();
+        // Query database for user's tasks and convert to DTOs using Stream API
         return taskRepository.findByUser(user).stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDTO)  // Method reference for conversion
                 .collect(Collectors.toList());
     }
     
+    /**
+     * Retrieves a specific task by ID with authorization check.
+     *
+     * @param id Task ID to retrieve
+     * @return TaskDTO if found and user is authorized
+     * @throws RuntimeException if task not found or user unauthorized
+     */
     public TaskDTO getTaskById(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
         
+        // Security check: verify task belongs to authenticated user
         if (!task.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized access to task");
         }
