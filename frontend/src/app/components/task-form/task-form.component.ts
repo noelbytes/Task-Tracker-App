@@ -36,6 +36,16 @@ export class TaskFormComponent implements OnInit {
   TaskStatus = TaskStatus;
   TaskPriority = TaskPriority;
 
+  constructor(
+    private taskService: TaskService,
+    private aiService: AIService
+  ) { }
+
+  ngOnInit(): void {
+    if (this.task) {
+      this.isEditMode = true;
+      this.formData = { ...this.task };
+    }
 
     // Check if AI is available
     this.checkAIAvailability();
@@ -46,7 +56,7 @@ export class TaskFormComponent implements OnInit {
    */
   checkAIAvailability(): void {
     this.aiService.getAIStatus().subscribe({
-      next: (status) => {
+      next: (status: any) => {
         this.aiAvailable = status.available;
       },
       error: () => {
@@ -75,7 +85,7 @@ export class TaskFormComponent implements OnInit {
 
     this.isParsingAI = true;
     this.aiService.parseNaturalLanguageTask(this.naturalLanguageInput).subscribe({
-      next: (parsed) => {
+      next: (parsed: any) => {
         // AI returns JSON string, parse it
         let parsedData;
         try {
@@ -92,7 +102,7 @@ export class TaskFormComponent implements OnInit {
         this.isParsingAI = false;
         this.showNaturalLanguageInput = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('AI parsing failed:', error);
         // Fallback: use input as title
         this.formData.title = this.naturalLanguageInput;
@@ -111,25 +121,14 @@ export class TaskFormComponent implements OnInit {
     }
 
     this.aiService.recommendPriority(this.formData.title, this.formData.description).subscribe({
-      next: (result) => {
+      next: (result: any) => {
         // Update priority with AI recommendation
-        const priority = result.recommendedPriority as TaskPriority;
-        this.formData.priority = priority;
+        this.formData.priority = result.recommendedPriority as TaskPriority;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('AI priority recommendation failed:', error);
       }
     });
-  constructor(
-    private taskService: TaskService,
-    private aiService: AIService
-  ) { }
-
-  ngOnInit(): void {
-    if (this.task) {
-      this.isEditMode = true;
-      this.formData = { ...this.task };
-    }
   }
 
   onSubmit(): void {
@@ -141,7 +140,7 @@ export class TaskFormComponent implements OnInit {
           this.isSubmitting = false;
           this.taskSaved.emit();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.isSubmitting = false;
           console.error('Error updating task:', error);
           alert('Failed to update task');
@@ -153,7 +152,7 @@ export class TaskFormComponent implements OnInit {
           this.isSubmitting = false;
           this.taskSaved.emit();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.isSubmitting = false;
           console.error('Error creating task:', error);
           alert('Failed to create task');
