@@ -89,7 +89,7 @@ export class AnalyticsComponent implements OnInit {
    */
   checkAIAndLoadInsight(): void {
     this.aiService.getAIStatus().subscribe({
-      next: (status) => {
+      next: (status: any) => {
         this.aiAvailable = status.available;
         if (this.aiAvailable) {
           this.loadProductivityInsight();
@@ -107,11 +107,11 @@ export class AnalyticsComponent implements OnInit {
   loadProductivityInsight(): void {
     this.loadingInsight = true;
     this.aiService.getProductivityInsight().subscribe({
-      next: (result) => {
+      next: (result: any) => {
         this.aiInsight = result.insight;
         this.loadingInsight = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Failed to load AI insight:', error);
         this.aiInsight = '';
         this.loadingInsight = false;
@@ -121,12 +121,12 @@ export class AnalyticsComponent implements OnInit {
 
   loadStats(): void {
     this.taskService.getTaskStats().subscribe({
-      next: (stats) => {
+      next: (stats: TaskStats) => {
         this.stats = stats;
         this.updateCharts();
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading stats:', error);
         this.isLoading = false;
       }
