@@ -197,35 +197,59 @@ tasks.forEach(t => console.log(t.querySelector('.task-date').textContent));
 
 ---
 
-## ✅ Conclusion
+## ✅ Conclusion & Implementation
 
-### Current State
+### Updated State (After Enhancement)
 - ✅ **createdAt**: Visible in UI on every task card
-- ❌ **completedAt**: Available in data but NOT displayed
+- ✅ **completedAt**: Now displayed as **completion duration** for DONE tasks
 
-### Why completedAt is Hidden
-Likely design decision to keep UI minimal. The data is:
-- ✅ Captured in database
-- ✅ Included in API responses
-- ✅ Defined in frontend model
-- ✅ Used for analytics calculations
-- ❌ Just not rendered in any component
+### What Was Added
+**Completion Duration Indicator:**
+- ✅ Automatically calculates time between creation and completion
+- ✅ Displays in human-readable format (minutes/hours/days)
+- ✅ Only shows for tasks with status = DONE
+- ✅ Green badge styling with clock emoji (⏱️)
 
-### Impact
-- Users can see when tasks were created
-- Users **cannot** see when tasks were completed
-- Average completion time in analytics uses this data
-- No visual indication of completion timestamps
+### Display Logic
+```typescript
+getCompletionDuration(createdAt?: string, completedAt?: string): string | null
+```
+- Less than 1 hour: "X minutes"
+- Less than 24 hours: "X hours"  
+- 24+ hours: "X days"
+
+### Visual Update
+**Before:**
+```
+┌─────────────────────────────────┐
+│  Task Title                  🔴 │
+│  Description text here          │
+│  ✅ Done  📅 11/7/25, 10:30 AM  │
+│  [✏️ Edit] [🗑️ Delete]          │
+└─────────────────────────────────┘
+```
+
+**After:**
+```
+┌─────────────────────────────────┐
+│  Task Title                  🔴 │
+│  Description text here          │
+│  ✅ Done                        │
+│  📅 11/7/25, 10:30 AM           │
+│  ⏱️ Completed in 3 hours        │
+│  [✏️ Edit] [🗑️ Delete]          │
+└─────────────────────────────────┘
+```
+
+### Benefits
+- ✅ Users can now see how long tasks took to complete
+- ✅ Provides productivity insights without cluttering UI
+- ✅ Maintains clean design with contextual information
+- ✅ Uses existing timestamp data effectively
 
 ---
 
-## 🚀 To Display completedAt
+## ✅ Feature Complete!
 
-Would you like me to:
-1. Add `completedAt` display to task cards?
-2. Show completion duration for DONE tasks?
-3. Add both timestamps with better formatting?
-4. Leave as-is (minimal UI)?
-
-Let me know and I can implement the enhancement!
+The completion duration indicator has been successfully implemented and committed to the repository.
 
