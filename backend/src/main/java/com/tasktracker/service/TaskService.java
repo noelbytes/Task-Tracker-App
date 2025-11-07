@@ -184,11 +184,22 @@ public class TaskService {
         double averageCompletionTimeHours = 0.0;
         
         if (!completedTasksList.isEmpty()) {
-            long totalDuration = completedTasksList.stream()
-                    .filter(task -> task.getCompletedAt() != null)
-                    .mapToLong(task -> Duration.between(task.getCreatedAt(), task.getCompletedAt()).toHours())
-                    .sum();
-            averageCompletionTimeHours = (double) totalDuration / completedTasksList.size();
+            // Use milliseconds for precision instead of truncated hours
+            // Filter to only include tasks with both timestamps present
+            List<Task> tasksWithTimestamps = completedTasksList.stream()
+                    .filter(task -> task.getCreatedAt() != null && task.getCompletedAt() != null)
+                    .collect(Collectors.toList());
+
+            if (!tasksWithTimestamps.isEmpty()) {
+                // Calculate total duration in milliseconds
+                long totalMillis = tasksWithTimestamps.stream()
+                        .mapToLong(task -> Duration.between(task.getCreatedAt(), task.getCompletedAt()).toMillis())
+                        .sum();
+
+                // Calculate average in milliseconds, then convert to hours
+                double averageMillis = (double) totalMillis / tasksWithTimestamps.size();
+                averageCompletionTimeHours = averageMillis / (1000.0 * 60.0 * 60.0); // Convert ms to hours
+            }
         }
         
         return new TaskStatsDTO(totalTasks, completedTasks, pendingTasks, 
