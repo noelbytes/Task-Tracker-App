@@ -1,12 +1,12 @@
-# 📋 Task Tracker Application
+# Task Tracker Application
 
-A full-stack task management application with user authentication, CRUD operations, and analytics dashboard.
+A full-stack task management application built with Spring Boot and Angular, featuring JWT authentication, CRUD operations, and an analytics dashboard.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-success)](https://task-tracker-app-1-e7am.onrender.com)
 [![Backend](https://img.shields.io/badge/backend-Spring%20Boot-brightgreen)](https://task-tracker-app-1uok.onrender.com)
 [![API Docs](https://img.shields.io/badge/API-Swagger-orange)](https://task-tracker-app-1uok.onrender.com/swagger-ui.html)
 
-## 🚀 Live Demo
+## Live Demo
 
 - **Frontend:** https://task-tracker-app-1-e7am.onrender.com
 - **Backend API:** https://task-tracker-app-1uok.onrender.com
@@ -21,37 +21,37 @@ Password: demo123
 
 ---
 
-## 🎯 Features
+## Features
 
 ### Authentication & Security
-- ✅ JWT-based authentication
-- ✅ Secure password hashing with BCrypt
-- ✅ Protected routes with auth guards
-- ✅ Session management
+- JWT-based authentication
+- Secure password hashing with BCrypt
+- Protected routes with auth guards
+- Session management
 
 ### Task Management
-- ✅ Create, Read, Update, Delete tasks
-- ✅ Task status tracking (TODO, IN_PROGRESS, DONE)
-- ✅ Priority levels (LOW, MEDIUM, HIGH)
-- ✅ Filter tasks by status and priority
-- ✅ Automatic completion time tracking
+- Create, Read, Update, Delete tasks
+- Task status tracking (TODO, IN_PROGRESS, DONE)
+- Priority levels (LOW, MEDIUM, HIGH)
+- Filter tasks by status and priority
+- Automatic completion time tracking
 
 ### Analytics Dashboard
-- ✅ Total task count
-- ✅ Completed vs pending tasks
-- ✅ Average completion time
-- ✅ Visual charts with Chart.js
-- ✅ Task distribution by status
+- Total task count
+- Completed vs pending tasks
+- Average completion time
+- Visual charts with Chart.js
+- Task distribution by status
 
 ### API Documentation
-- ✅ Interactive Swagger UI
-- ✅ OpenAPI 3.0 specification
-- ✅ JWT authentication support in Swagger
-- ✅ Try-it-out functionality
+- Interactive Swagger UI
+- OpenAPI 3.0 specification
+- JWT authentication support in Swagger
+- Try-it-out functionality
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Tech Stack
 
@@ -142,7 +142,7 @@ Task-Tracker-App/
 
 ---
 
-## 📡 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -197,7 +197,7 @@ curl -X POST https://task-tracker-app-1uok.onrender.com/api/tasks \
 
 ---
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 
@@ -279,7 +279,7 @@ npm run build
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### User Table
 ```sql
@@ -306,7 +306,7 @@ CREATE TABLE tasks (
 
 ---
 
-## 🔒 Environment Variables
+## Environment Variables
 
 ### Backend (Production)
 
@@ -335,7 +335,7 @@ Environment files are configured in `src/environments/`:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Using Swagger UI
 
@@ -369,7 +369,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 ### Deploy to Render.com
 
@@ -406,7 +406,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## 📚 Additional Documentation
+## Additional Documentation
 
 - **[API Documentation](https://task-tracker-app-1uok.onrender.com/swagger-ui.html)** - Interactive API explorer
 - **[Swagger Guide](SWAGGER_GUIDE.md)** - How to use Swagger UI
@@ -415,7 +415,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## 🛠️ Development
+## Development
 
 ### Backend Technologies
 - Spring Boot 3.2.0
@@ -437,7 +437,7 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Backend won't start
 - Check PostgreSQL is running
@@ -461,13 +461,13 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
 ---
 
-## 👤 Author
+## Author
 
 **Your Name**
 - GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
@@ -475,7 +475,7 @@ This project is licensed under the MIT License.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Spring Boot Documentation
 - Angular Documentation
@@ -484,11 +484,5 @@ This project is licensed under the MIT License.
 
 ---
 
-## ⭐ Show Your Support
-
-Give a ⭐️ if this project helped you!
-
----
-
-**Built with ❤️ using Spring Boot and Angular**
+**Built using Spring Boot and Angular**
 
