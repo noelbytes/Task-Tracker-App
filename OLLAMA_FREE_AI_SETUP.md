@@ -262,26 +262,53 @@ spring.ai.ollama.chat.options.temperature=0.9
 
 ## 🌐 Production Deployment (Render)
 
-### Option 1: Disable AI in Production (Simplest)
-Just don't run Ollama on production. AI features will gracefully fallback.
+### ⚠️ Ollama Won't Work on Render Free Tier
 
-### Option 2: Run Ollama on Render
-Unfortunately, Render's free tier doesn't have enough resources for Ollama.
+Render's free tier doesn't have enough RAM/CPU to run Ollama models.
 
-**Alternative:** Use a separate VPS for Ollama:
-1. Get free VPS (Oracle Cloud has generous free tier)
-2. Install Ollama on VPS
-3. Set environment variable:
-```
-OLLAMA_BASE_URL=http://your-vps-ip:11434
-```
+### ✅ Recommended: Use Groq (FREE API)
 
-### Option 3: Use Groq (Free API)
-Groq offers free API with good limits:
-```properties
-# Switch to Groq if deploying to production
-# Visit: https://console.groq.com for free API key
-```
+**Groq is PERFECT for Render deployment:**
+- ✅ **100% FREE** - Generous free tier
+- ✅ **Fast** - Faster than GPT-3.5
+- ✅ **No credit card** - Just sign up
+- ✅ **Good limits** - 30 requests/minute free
+- ✅ **Easy setup** - Just add API key
+
+#### Step 1: Get Free Groq API Key
+
+1. Visit: https://console.groq.com
+2. Sign up (free, no credit card)
+3. Go to API Keys section
+4. Create new API key
+5. Copy the key (starts with `gsk_...`)
+
+#### Step 2: Switch to Groq in Your Code
+
+I'll create the configuration files for you! Just:
+
+1. **Add Groq dependency to pom.xml** (I'll do this)
+2. **Set environment variable on Render:**
+   ```
+   GROQ_API_KEY=gsk_your_key_here
+   ```
+
+#### Step 3: Deploy to Render
+
+Your app will use:
+- **Local Development:** Ollama (free, runs locally)
+- **Production (Render):** Groq (free, cloud API)
+
+Both are 100% FREE!
+
+---
+
+### Alternative Option: Disable AI in Production
+
+If you prefer, AI features will gracefully fallback:
+- Set `AI_ENABLED=false` on Render
+- App works normally without AI
+- No errors, just no AI features
 
 ---
 

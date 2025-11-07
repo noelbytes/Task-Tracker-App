@@ -48,6 +48,9 @@ public class AIController {
     @Autowired
     private TaskService taskService;
 
+    @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:default}")
+    private String activeProfile;
+
     /**
      * Parses natural language text into structured task fields.
      *
