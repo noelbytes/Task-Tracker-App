@@ -225,6 +225,7 @@ public class AIController {
      * Health check endpoint to verify AI service availability.
      *
      * Useful for frontend to conditionally enable/disable AI features.
+     * Shows different provider based on active profile.
      *
      * @return Status of AI service
      */
@@ -238,8 +239,18 @@ public class AIController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("available", available);
-        response.put("provider", "Ollama (Free Local LLM)");
-        response.put("model", "llama2");
+
+        // Show different provider based on active profile
+        if ("prod".equals(activeProfile)) {
+            response.put("provider", "Groq (Free Cloud API)");
+            response.put("model", "llama3-8b-8192");
+            response.put("environment", "Production (Render)");
+        } else {
+            response.put("provider", "Ollama (Free Local LLM)");
+            response.put("model", "llama2");
+            response.put("environment", "Development (Local)");
+        }
+
         response.put("cost", "$0.00 - Completely Free!");
 
         return ResponseEntity.ok(response);
