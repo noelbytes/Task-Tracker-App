@@ -57,6 +57,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()  // Allow CORS preflight
                 .requestMatchers("/api/auth/**", "/h2-console/**", "/actuator/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()  // Swagger UI
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
