@@ -441,13 +441,6 @@ This project is licensed under the MIT License.
 
 ---
 
-## Author
-
-**Your Name**
-- GitHub: [@YOUR_USERNAME](https://github.com/YOUR_USERNAME)
-- Portfolio: [your-portfolio.com](https://your-portfolio.com)
-
----
 
 ## Acknowledgments
 
