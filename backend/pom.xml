@@ -108,10 +108,10 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!-- Spring AI OpenAI -->
+        <!-- Spring AI Ollama (Free Local LLM) -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
+            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
             <version>1.0.0-M3</version>
         </dependency>
     </dependencies>

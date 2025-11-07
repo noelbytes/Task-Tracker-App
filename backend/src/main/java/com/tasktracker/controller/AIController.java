@@ -20,15 +20,15 @@ import java.util.Map;
 
 /**
  * REST Controller for AI-powered task features.
- * 
+ *
  * Provides endpoints for:
  * - Natural language task creation
  * - Smart task suggestions
  * - Priority recommendations
  * - Productivity insights
- * 
+ *
  * Requires JWT authentication for all endpoints.
- * 
+ *
  * Interview Points:
  * - Integration of AI services into REST API
  * - Graceful degradation when AI unavailable
@@ -50,11 +50,11 @@ public class AIController {
 
     /**
      * Parses natural language text into structured task fields.
-     * 
+     *
      * Example: POST /api/ai/parse-task
      * Body: {"text": "Remind me to buy groceries tomorrow"}
      * Response: {"title": "Buy groceries", "description": "...", "priority": "MEDIUM"}
-     * 
+     *
      * @param request Natural language task description
      * @return Structured task fields as JSON
      */
@@ -78,7 +78,7 @@ public class AIController {
 
             // Call AI service to parse natural language
             String parsedJson = aiTaskService.parseNaturalLanguageTask(request.getText());
-            
+
             return ResponseEntity.ok(parsedJson);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
@@ -89,9 +89,9 @@ public class AIController {
 
     /**
      * Generates smart task suggestions based on user's history.
-     * 
+     *
      * Analyzes recent tasks and suggests related or follow-up tasks.
-     * 
+     *
      * @return List of suggested task titles and productivity insight
      */
     @Operation(
@@ -104,7 +104,7 @@ public class AIController {
         try {
             // Get user's recent tasks for context
             List<com.tasktracker.dto.TaskDTO> recentTaskDTOs = taskService.getAllTasks();
-            
+
             // Convert DTOs back to entities for AI processing (simplified)
             List<Task> recentTasks = recentTaskDTOs.stream()
                     .map(dto -> {
@@ -118,7 +118,7 @@ public class AIController {
 
             // Generate AI suggestions
             List<String> suggestions = aiTaskService.generateTaskSuggestions(recentTasks);
-            
+
             // Generate productivity insight
             String insight = "Based on your task patterns, here are some suggestions to help you stay organized.";
             if (!recentTasks.isEmpty()) {
@@ -131,7 +131,7 @@ public class AIController {
                     suggestions.toArray(new String[0]),
                     insight
             );
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             // Return empty suggestions if AI fails
@@ -145,9 +145,9 @@ public class AIController {
 
     /**
      * Recommends priority level for a task based on AI analysis.
-     * 
+     *
      * Analyzes title and description for urgency indicators.
-     * 
+     *
      * @param title Task title
      * @param description Task description (optional)
      * @return Recommended priority (LOW, MEDIUM, HIGH)
@@ -163,11 +163,11 @@ public class AIController {
             @RequestParam(required = false) String description) {
         try {
             Task.TaskPriority priority = aiTaskService.recommendPriority(title, description);
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("recommendedPriority", priority.name());
             response.put("title", title);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
@@ -179,9 +179,9 @@ public class AIController {
 
     /**
      * Generates productivity insight based on task history.
-     * 
+     *
      * Analyzes completion patterns and provides actionable advice.
-     * 
+     *
      * @return AI-generated productivity insight
      */
     @Operation(
@@ -206,10 +206,10 @@ public class AIController {
 
             double avgTime = taskService.getTaskStats().getAverageCompletionTimeHours();
             String insight = aiTaskService.generateProductivityInsight(tasks, avgTime);
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("insight", insight);
-            
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
@@ -220,9 +220,9 @@ public class AIController {
 
     /**
      * Health check endpoint to verify AI service availability.
-     * 
+     *
      * Useful for frontend to conditionally enable/disable AI features.
-     * 
+     *
      * @return Status of AI service
      */
     @Operation(
@@ -232,12 +232,13 @@ public class AIController {
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getAIStatus() {
         boolean available = aiTaskService.isAIAvailable();
-        
+
         Map<String, Object> response = new HashMap<>();
         response.put("available", available);
-        response.put("provider", "OpenAI");
-        response.put("model", "gpt-3.5-turbo");
-        
+        response.put("provider", "Ollama (Free Local LLM)");
+        response.put("model", "llama2");
+        response.put("cost", "$0.00 - Completely Free!");
+
         return ResponseEntity.ok(response);
     }
 }
