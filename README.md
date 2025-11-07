@@ -2,15 +2,12 @@
 
 A full-stack task management application built with Spring Boot and Angular, featuring JWT authentication, CRUD operations, and an analytics dashboard.
 
-[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://task-tracker-app-1-e7am.onrender.com)
-[![Backend](https://img.shields.io/badge/backend-Spring%20Boot-brightgreen)](https://task-tracker-app-1uok.onrender.com)
-[![API Docs](https://img.shields.io/badge/API-Swagger-orange)](https://task-tracker-app-1uok.onrender.com/swagger-ui.html)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://tasktracker-frontend-z3dz.onrender.com/)
 
 ## Live Demo
 
-- **Frontend:** https://task-tracker-app-1-e7am.onrender.com
-- **Backend API:** https://task-tracker-app-1uok.onrender.com
-- **Swagger UI:** https://task-tracker-app-1uok.onrender.com/swagger-ui.html
+- **Application:** https://tasktracker-frontend-z3dz.onrender.com/
+- **API Documentation:** https://task-tracker-app-1uok.onrender.com/swagger-ui.html
 
 ### Demo Credentials
 
@@ -437,29 +434,6 @@ curl -H "Authorization: Bearer $TOKEN" \
 
 ---
 
-## Troubleshooting
-
-### Backend won't start
-- Check PostgreSQL is running
-- Verify DATABASE_URL format
-- Ensure JWT_SECRET is set
-
-### Frontend shows blank page
-- Check browser console for errors
-- Verify backend URL in environment files
-- Clear browser cache
-
-### CORS errors
-- Verify CORS_ORIGINS matches frontend URL exactly
-- Include protocol (https://)
-- Restart backend after changing CORS_ORIGINS
-
-### Authentication fails
-- Check credentials (demo/demo123)
-- Verify JWT_SECRET is configured
-- Check token expiration (default: 24 hours)
-
----
 
 ## License
 
