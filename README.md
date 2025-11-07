@@ -1,9 +1,39 @@
 # 📋 Task Tracker Web Application
-A full-stack task management application built with Spring Boot (Backend) and Angular (Frontend). The app allows users to create, update, delete, and visualize tasks with comprehensive analytics.
+
+A full-stack task management application built with Spring Boot (Backend) and Angular (Frontend).
+
 ![Task Tracker](https://img.shields.io/badge/Status-Complete-success)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
 ![Angular](https://img.shields.io/badge/Angular-18-red)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+
+## 📚 Documentation
+
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Complete deployment guide for Render, Docker, and local development
+- **[API.md](API.md)** - API documentation
+- **[DOCKER_GUIDE.md](DOCKER_GUIDE.md)** - Docker setup and commands
+- **[INTELLIJ_GUIDE.md](INTELLIJ_GUIDE.md)** - How to run in IntelliJ IDEA
+
+## 🚀 Quick Start
+
+### Deploy to Render (Free):
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for complete instructions.
+
+### Run with Docker:
+```bash
+docker-compose up -d
+```
+
+### Run Locally:
+```bash
+# Backend
+cd backend && ./mvnw spring-boot:run
+
+# Frontend  
+cd frontend && npm install && npm start
+```
+
+Demo credentials: `demo` / `demo123`
 ## 🚀 Features
 ### Backend (Spring Boot)
 - ✅ RESTful API with Spring Boot 3.2
