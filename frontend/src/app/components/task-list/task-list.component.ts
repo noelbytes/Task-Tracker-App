@@ -128,5 +128,41 @@ export class TaskListComponent implements OnInit {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
+
+  /**
+   * Calculates completion duration between task creation and completion.
+   *
+   * Returns human-readable duration string:
+   * - Less than 1 hour: "X minutes"
+   * - Less than 24 hours: "X hours"
+   * - 24+ hours: "X days"
+   *
+   * @param createdAt Task creation timestamp
+   * @param completedAt Task completion timestamp
+   * @returns Formatted duration string or null if timestamps invalid
+   */
+  getCompletionDuration(createdAt?: string, completedAt?: string): string | null {
+    if (!createdAt || !completedAt) {
+      return null;
+    }
+
+    const created = new Date(createdAt);
+    const completed = new Date(completedAt);
+    const diffMs = completed.getTime() - created.getTime();
+
+    // Convert milliseconds to minutes, hours, days
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    // Return appropriate format based on duration
+    if (diffMinutes < 60) {
+      return `${diffMinutes} ${diffMinutes === 1 ? 'minute' : 'minutes'}`;
+    } else if (diffHours < 24) {
+      return `${diffHours} ${diffHours === 1 ? 'hour' : 'hours'}`;
+    } else {
+      return `${diffDays} ${diffDays === 1 ? 'day' : 'days'}`;
+    }
+  }
 }
 

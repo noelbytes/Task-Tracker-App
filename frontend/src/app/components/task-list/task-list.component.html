@@ -57,9 +57,14 @@
         <span class="status-badge" [ngClass]="getStatusClass(task.status)">
           {{ task.status | titlecase }}
         </span>
-        <span class="task-date">
-          {{ task.createdAt | date: 'short' }}
-        </span>
+        <div class="task-dates">
+          <span class="task-date">
+            {{ task.createdAt | date: 'short' }}
+          </span>
+          <span class="completion-duration" *ngIf="task.status === 'DONE' && getCompletionDuration(task.createdAt, task.completedAt)">
+            ⏱️ Completed in {{ getCompletionDuration(task.createdAt, task.completedAt) }}
+          </span>
+        </div>
       </div>
 
       <div class="task-actions">
