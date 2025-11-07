@@ -8,6 +8,9 @@ import com.tasktracker.model.User;
 import com.tasktracker.repository.TaskRepository;
 import com.tasktracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +46,7 @@ public class TaskService {
         return dto;
     }
     
+    @Cacheable(value = "tasks", key = "#root.method.name + '_' + @taskService.getCurrentUser().id")
     public List<TaskDTO> getAllTasks() {
         User user = getCurrentUser();
         return taskRepository.findByUser(user).stream()
@@ -50,6 +54,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "task", key = "#id")
     public TaskDTO getTaskById(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -62,6 +67,12 @@ public class TaskService {
         return convertToDTO(task);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "tasks", allEntries = true),
+            @CacheEvict(value = "taskStats", allEntries = true),
+            @CacheEvict(value = "tasksByStatus", allEntries = true),
+            @CacheEvict(value = "tasksByPriority", allEntries = true)
+    })
     public TaskDTO createTask(TaskRequest request) {
         User user = getCurrentUser();
         
@@ -76,6 +87,13 @@ public class TaskService {
         return convertToDTO(savedTask);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "task", key = "#id"),
+            @CacheEvict(value = "tasks", allEntries = true),
+            @CacheEvict(value = "taskStats", allEntries = true),
+            @CacheEvict(value = "tasksByStatus", allEntries = true),
+            @CacheEvict(value = "tasksByPriority", allEntries = true)
+    })
     public TaskDTO updateTask(Long id, TaskRequest request) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -102,6 +120,13 @@ public class TaskService {
         return convertToDTO(updatedTask);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "task", key = "#id"),
+            @CacheEvict(value = "tasks", allEntries = true),
+            @CacheEvict(value = "taskStats", allEntries = true),
+            @CacheEvict(value = "tasksByStatus", allEntries = true),
+            @CacheEvict(value = "tasksByPriority", allEntries = true)
+    })
     public void deleteTask(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -114,6 +139,7 @@ public class TaskService {
         taskRepository.delete(task);
     }
     
+    @Cacheable(value = "tasksByStatus", key = "#status + '_' + @taskService.getCurrentUser().id")
     public List<TaskDTO> getTasksByStatus(Task.TaskStatus status) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndStatus(user, status).stream()
@@ -121,6 +147,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "tasksByPriority", key = "#priority + '_' + @taskService.getCurrentUser().id")
     public List<TaskDTO> getTasksByPriority(Task.TaskPriority priority) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndPriority(user, priority).stream()
@@ -128,6 +155,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "taskStats", key = "@taskService.getCurrentUser().id")
     public TaskStatsDTO getTaskStats() {
         User user = getCurrentUser();
         
