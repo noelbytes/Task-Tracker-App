@@ -2,6 +2,32 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h2>{{ isEditMode ? 'Edit Task' : 'Add New Task' }}</h2>
 
+    <!-- AI Natural Language Input (only for new tasks) -->
+    <div class="ai-section" *ngIf="!isEditMode && aiAvailable">
+      <button
+        type="button"
+        class="btn-ai-toggle"
+        (click)="toggleNaturalLanguageInput()">
+        🤖 {{ showNaturalLanguageInput ? 'Use Form' : 'Type Naturally with AI' }}
+      </button>
+
+      <div class="natural-language-input" *ngIf="showNaturalLanguageInput">
+        <label>Describe your task in plain English:</label>
+        <textarea
+          [(ngModel)]="naturalLanguageInput"
+          placeholder="e.g., 'Finish project report by Friday - very important!'"
+          rows="3"
+          class="form-control natural-input"></textarea>
+        <button
+          type="button"
+          class="btn-parse-ai"
+          (click)="parseWithAI()"
+          [disabled]="isParsingAI || !naturalLanguageInput.trim()">
+          {{ isParsingAI ? '🔄 Parsing...' : '✨ Parse with AI' }}
+        </button>
+      </div>
+    </div>
+
     <form (ngSubmit)="onSubmit()" #taskForm="ngForm">
       <div class="form-group">
         <label for="title">Title *</label>
@@ -17,16 +43,26 @@
 
       <div class="form-group">
         <label for="description">Description</label>
-        <textarea
-          id="description"
-          name="description"
-          [(ngModel)]="formData.description"
-          placeholder="Enter task description"
-          rows="4"
-          class="form-control"></textarea>
-      </div>
-
-      <div class="form-row">
+          <div class="priority-group">
+            <select
+              id="priority"
+              name="priority"
+              [(ngModel)]="formData.priority"
+              required
+              class="form-control">
+              <option [value]="TaskPriority.LOW">Low</option>
+              <option [value]="TaskPriority.MEDIUM">Medium</option>
+              <option [value]="TaskPriority.HIGH">High</option>
+            </select>
+            <button
+              type="button"
+              class="btn-ai-recommend"
+              *ngIf="aiAvailable && formData.title"
+              (click)="getAIPriorityRecommendation()"
+              title="Get AI priority recommendation">
+              🤖 AI Suggest
+            </button>
+          </div>
         <div class="form-group">
           <label for="status">Status *</label>
           <select

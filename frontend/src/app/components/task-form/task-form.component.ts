@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from '../../services/task.service';
+import { AIService } from '../../services/ai.service';
 import { Task, TaskStatus, TaskPriority } from '../../models/task.model';
 
 @Component({
@@ -26,10 +27,103 @@ export class TaskFormComponent implements OnInit {
   isEditMode: boolean = false;
   isSubmitting: boolean = false;
 
+  // AI features
+  naturalLanguageInput: string = '';
+  showNaturalLanguageInput: boolean = false;
+  isParsingAI: boolean = false;
+  aiAvailable: boolean = false;
+
   TaskStatus = TaskStatus;
   TaskPriority = TaskPriority;
 
-  constructor(private taskService: TaskService) { }
+
+    // Check if AI is available
+    this.checkAIAvailability();
+  }
+
+  /**
+   * Checks if AI service is available for natural language features.
+   */
+  checkAIAvailability(): void {
+    this.aiService.getAIStatus().subscribe({
+      next: (status) => {
+        this.aiAvailable = status.available;
+      },
+      error: () => {
+        this.aiAvailable = false;
+      }
+    });
+  }
+
+  /**
+   * Toggles natural language input mode.
+   */
+  toggleNaturalLanguageInput(): void {
+    this.showNaturalLanguageInput = !this.showNaturalLanguageInput;
+    if (this.showNaturalLanguageInput) {
+      this.naturalLanguageInput = '';
+    }
+  }
+
+  /**
+   * Parses natural language input using AI and populates form fields.
+   */
+  parseWithAI(): void {
+    if (!this.naturalLanguageInput.trim()) {
+      return;
+    }
+
+    this.isParsingAI = true;
+    this.aiService.parseNaturalLanguageTask(this.naturalLanguageInput).subscribe({
+      next: (parsed) => {
+        // AI returns JSON string, parse it
+        let parsedData;
+        try {
+          parsedData = typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+        } catch (e) {
+          parsedData = parsed;
+        }
+
+        // Populate form with AI-parsed data
+        this.formData.title = parsedData.title || this.naturalLanguageInput;
+        this.formData.description = parsedData.description || '';
+        this.formData.priority = parsedData.priority || TaskPriority.MEDIUM;
+
+        this.isParsingAI = false;
+        this.showNaturalLanguageInput = false;
+      },
+      error: (error) => {
+        console.error('AI parsing failed:', error);
+        // Fallback: use input as title
+        this.formData.title = this.naturalLanguageInput;
+        this.isParsingAI = false;
+        this.showNaturalLanguageInput = false;
+      }
+    });
+  }
+
+  /**
+   * Gets AI recommendation for priority based on current title/description.
+   */
+  getAIPriorityRecommendation(): void {
+    if (!this.formData.title.trim()) {
+      return;
+    }
+
+    this.aiService.recommendPriority(this.formData.title, this.formData.description).subscribe({
+      next: (result) => {
+        // Update priority with AI recommendation
+        const priority = result.recommendedPriority as TaskPriority;
+        this.formData.priority = priority;
+      },
+      error: (error) => {
+        console.error('AI priority recommendation failed:', error);
+      }
+    });
+  constructor(
+    private taskService: TaskService,
+    private aiService: AIService
+  ) { }
 
   ngOnInit(): void {
     if (this.task) {
