@@ -10,6 +10,9 @@ import com.tasktracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -76,6 +79,7 @@ public class TaskService {
      *
      * @return List of TaskDTOs belonging to current user
      */
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public List<TaskDTO> getAllTasks() {
         User user = getCurrentUser();
         // Query database for user's tasks and convert to DTOs using Stream API
@@ -91,6 +95,7 @@ public class TaskService {
      * @return TaskDTO if found and user is authorized
      * @throws RuntimeException if task not found or user unauthorized
      */
+    @Cacheable(value = "taskById", key = "#id")
     public TaskDTO getTaskById(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -104,6 +109,10 @@ public class TaskService {
         return convertToDTO(task);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()"),
+            @CacheEvict(value = "taskStats", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
+    })
     public TaskDTO createTask(TaskRequest request) {
         User user = getCurrentUser();
         
@@ -118,6 +127,11 @@ public class TaskService {
         return convertToDTO(savedTask);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()"),
+            @CacheEvict(value = "taskById", key = "#id"),
+            @CacheEvict(value = "taskStats", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
+    })
     public TaskDTO updateTask(Long id, TaskRequest request) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -144,6 +158,11 @@ public class TaskService {
         return convertToDTO(updatedTask);
     }
     
+    @Caching(evict = {
+            @CacheEvict(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()"),
+            @CacheEvict(value = "taskById", key = "#id"),
+            @CacheEvict(value = "taskStats", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
+    })
     public void deleteTask(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -156,6 +175,7 @@ public class TaskService {
         taskRepository.delete(task);
     }
     
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':status:' + #status")
     public List<TaskDTO> getTasksByStatus(Task.TaskStatus status) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndStatus(user, status).stream()
@@ -163,6 +183,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':priority:' + #priority")
     public List<TaskDTO> getTasksByPriority(Task.TaskPriority priority) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndPriority(user, priority).stream()
@@ -170,6 +191,7 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
     
+    @Cacheable(value = "taskStats", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public TaskStatsDTO getTaskStats() {
         User user = getCurrentUser();
         
@@ -206,4 +228,3 @@ public class TaskService {
                 averageCompletionTimeHours, todoTasks, inProgressTasks);
     }
 }
-

@@ -4,10 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskStatsDTO {
+public class TaskStatsDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private long totalTasks;
     private long completedTasks;
     private long pendingTasks;
@@ -15,4 +19,3 @@ public class TaskStatsDTO {
     private long todoTasks;
     private long inProgressTasks;
 }
-

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xmlns='http://www.ehcache.org/v3'
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
+    <!-- Default cache settings -->
+    <cache alias="defaultCache">
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">500</heap>
+            <offheap unit="MB">16</offheap>
+        </resources>
+    </cache>
+
+    <!-- Cache for task lists per user -->
+    <cache alias="tasksByUser">
+        <expiry>
+            <ttl unit="minutes">5</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">64</offheap>
+        </resources>
+    </cache>
+
+    <!-- Cache for individual task by id -->
+    <cache alias="taskById">
+        <expiry>
+            <ttl unit="minutes">10</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">2000</heap>
+            <offheap unit="MB">64</offheap>
+        </resources>
+    </cache>
+
+    <!-- Cache for task stats per user -->
+    <cache alias="taskStats">
+        <expiry>
+            <ttl unit="minutes">2</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">500</heap>
+            <offheap unit="MB">32</offheap>
+        </resources>
+    </cache>
+
+</config>
