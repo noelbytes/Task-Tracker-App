@@ -41,8 +41,14 @@
     </div>
   </div>
 
+  <!-- Loading Spinner -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading tasks...</p>
+  </div>
+
   <!-- Task Grid -->
-  <div class="task-grid" *ngIf="filteredTasks.length > 0">
+  <div class="task-grid" *ngIf="!isLoading && filteredTasks.length > 0">
     <div class="task-card" *ngFor="let task of filteredTasks">
       <div class="task-header">
         <h3>{{ task.title }}</h3>
@@ -75,7 +81,7 @@
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" *ngIf="filteredTasks.length === 0">
+  <div class="empty-state" *ngIf="!isLoading && filteredTasks.length === 0">
     <h2>No tasks found</h2>
     <p>Create your first task to get started!</p>
     <button class="btn-add-large" (click)="openAddTaskForm()">+ Create Task</button>
@@ -89,4 +95,3 @@
     (cancelled)="closeTaskForm()">
   </app-task-form>
 </div>
-
