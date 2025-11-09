@@ -16,27 +16,24 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         SimpleCacheManager manager = new SimpleCacheManager();
-        // Align TTLs & sizes with previous Ehcache tuning
+        // Smaller sizes and no recordStats to reduce CPU/memory on tiny hosts
         CaffeineCache tasksByUser = new CaffeineCache("tasksByUser",
                 Caffeine.newBuilder()
-                        .initialCapacity(50)
-                        .maximumSize(140)
-                        .expireAfterWrite(60, TimeUnit.SECONDS)
-                        .recordStats()
+                        .initialCapacity(20)
+                        .maximumSize(60)
+                        .expireAfterWrite(45, TimeUnit.SECONDS)
                         .build());
         CaffeineCache taskById = new CaffeineCache("taskById",
                 Caffeine.newBuilder()
-                        .initialCapacity(100)
-                        .maximumSize(300)
-                        .expireAfterWrite(120, TimeUnit.SECONDS)
-                        .recordStats()
+                        .initialCapacity(50)
+                        .maximumSize(150)
+                        .expireAfterWrite(60, TimeUnit.SECONDS)
                         .build());
         CaffeineCache taskStats = new CaffeineCache("taskStats",
                 Caffeine.newBuilder()
-                        .initialCapacity(30)
-                        .maximumSize(80)
-                        .expireAfterWrite(30, TimeUnit.SECONDS)
-                        .recordStats()
+                        .initialCapacity(10)
+                        .maximumSize(30)
+                        .expireAfterWrite(20, TimeUnit.SECONDS)
                         .build());
         manager.setCaches(Arrays.asList(tasksByUser, taskById, taskStats));
         return manager;
