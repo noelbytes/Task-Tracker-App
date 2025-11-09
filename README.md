@@ -40,6 +40,12 @@ Password: demo123
 - Visual charts with Chart.js
 - Task distribution by status
 
+### Performance & Caching
+- In-memory caching with Caffeine
+- Optimized task retrieval and statistics
+- Configurable cache TTL and sizes
+- Automatic cache invalidation on updates
+
 ### API Documentation
 - Interactive Swagger UI
 - OpenAPI 3.0 specification
@@ -57,6 +63,7 @@ Password: demo123
 - **Language:** Java 17
 - **Database:** PostgreSQL 15 (Production) / H2 (Development)
 - **Security:** Spring Security + JWT
+- **Caching:** Caffeine (High-performance in-memory cache)
 - **API Documentation:** Springdoc OpenAPI (Swagger)
 - **Build Tool:** Maven
 
@@ -421,8 +428,10 @@ curl -H "Authorization: Bearer $TOKEN" \
 - PostgreSQL Driver 42.6.0
 - H2 Database (dev)
 - JWT (io.jsonwebtoken 0.12.3)
+- Caffeine Cache 3.1.8
 - Lombok
 - Springdoc OpenAPI 2.3.0
+- Spring Boot Actuator
 
 ### Frontend Technologies
 - Angular 18
