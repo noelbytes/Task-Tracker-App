@@ -7,15 +7,21 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
 import javax.cache.CacheManager;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class CacheConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(CacheConfig.class);
 
     private final Environment env;
     private final ResourceLoader resourceLoader;
@@ -49,7 +55,21 @@ public class CacheConfig {
             }
 
             URI configUri = resourceUrl.toURI();
-            return provider.getCacheManager(configUri, getClass().getClassLoader());
+            log.info("Initializing JCache CacheManager using config: {}", configUri);
+
+            CacheManager manager = provider.getCacheManager(configUri, getClass().getClassLoader());
+
+            // Collect and log cache names (INFO) for visibility in prod logs
+            try {
+                List<String> cacheNames = new ArrayList<>();
+                manager.getCacheNames().forEach(cacheNames::add);
+                log.info("JCache provider: {} | caches: {}", provider.getClass().getName(), cacheNames);
+            } catch (Throwable t) {
+                // Be defensive: don't fail app startup on logging issues
+                log.warn("Unable to enumerate caches from CacheManager for logging", t);
+            }
+
+            return manager;
         } catch (Exception e) {
             throw new IllegalStateException("Failed to create JCache CacheManager", e);
         }
