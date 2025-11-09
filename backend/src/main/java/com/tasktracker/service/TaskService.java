@@ -18,6 +18,7 @@ import org.springframework.cache.CacheManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -73,8 +74,15 @@ public class TaskService {
         dto.setDescription(task.getDescription());
         dto.setStatus(task.getStatus());
         dto.setPriority(task.getPriority());
-        dto.setCreatedAt(task.getCreatedAt());
-        dto.setCompletedAt(task.getCompletedAt());
+        // Convert LocalDateTime (entity) to Instant for unambiguous timezone serialization
+        LocalDateTime created = task.getCreatedAt();
+        if (created != null) {
+            dto.setCreatedAt(created.atZone(ZoneOffset.UTC).toInstant());
+        }
+        LocalDateTime completed = task.getCompletedAt();
+        if (completed != null) {
+            dto.setCompletedAt(completed.atZone(ZoneOffset.UTC).toInstant());
+        }
         return dto;
     }
     
@@ -134,14 +142,14 @@ public class TaskService {
     @CachePut(value = "taskById", key = "#result.id")
     public TaskDTO createTask(TaskRequest request) {
         User user = getCurrentUser();
-        
+
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
         task.setPriority(request.getPriority());
         task.setUser(user);
-        
+
         Task savedTask = taskRepository.save(task);
         evictUserTaskCaches();
         return convertToDTO(savedTask);
@@ -164,7 +172,7 @@ public class TaskService {
         
         // If status changes to DONE, set completion time
         if (request.getStatus() == Task.TaskStatus.DONE && task.getStatus() != Task.TaskStatus.DONE) {
-            task.setCompletedAt(LocalDateTime.now());
+            task.setCompletedAt(LocalDateTime.now(ZoneOffset.UTC));
         } else if (request.getStatus() != Task.TaskStatus.DONE && task.getStatus() == Task.TaskStatus.DONE) {
             task.setCompletedAt(null);
         }
