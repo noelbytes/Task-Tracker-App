@@ -24,7 +24,6 @@ import java.util.Map;
  */
 @RestController  // Indicates this is a REST controller
 @RequestMapping("/api/auth")  // Base path for authentication endpoints
-@CrossOrigin(origins = "*")  // Allows cross-origin requests
 @Tag(name = "Authentication", description = "Authentication endpoints for user login")
 public class AuthController {
     
@@ -83,4 +82,3 @@ public class AuthController {
         return ResponseEntity.ok("Auth endpoint is working!");
     }
 }
-

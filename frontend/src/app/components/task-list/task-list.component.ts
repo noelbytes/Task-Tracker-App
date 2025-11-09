@@ -23,6 +23,7 @@ export class TaskListComponent implements OnInit {
   filterStatus: string = 'ALL';
   filterPriority: string = 'ALL';
   currentUser: string = '';
+  isLoading: boolean = false;
 
   TaskStatus = TaskStatus;
   TaskPriority = TaskPriority;
@@ -39,13 +40,16 @@ export class TaskListComponent implements OnInit {
   }
 
   loadTasks(): void {
+    this.isLoading = true;
     this.taskService.getAllTasks().subscribe({
       next: (tasks) => {
         this.tasks = tasks;
         this.applyFilters();
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading tasks:', error);
+        this.isLoading = false;
       }
     });
   }
@@ -165,4 +169,3 @@ export class TaskListComponent implements OnInit {
     }
   }
 }
-

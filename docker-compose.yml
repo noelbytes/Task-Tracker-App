@@ -35,7 +35,7 @@ services:
       - DB_PASSWORD=postgres
       - JWT_SECRET=404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
       - JWT_EXPIRATION=86400000
-      - CORS_ORIGINS=http://localhost,http://localhost:80,http://localhost:4200
+      - CORS_ORIGINS=http://localhost,http://localhost:80,http://localhost:4200,http://localhost:8081
     ports:
       - "8080:8080"
     depends_on:
@@ -49,10 +49,10 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.local
     container_name: tasktracker-frontend
     ports:
-      - "80:80"
+      - "8081:80"
     depends_on:
       - backend
     networks:

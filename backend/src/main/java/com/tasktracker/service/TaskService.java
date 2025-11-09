@@ -10,11 +10,16 @@ import com.tasktracker.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Service layer for Task business logic.
@@ -34,6 +39,9 @@ public class TaskService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private CacheManager cacheManager;
+
     /**
      * Retrieves the currently authenticated user from the security context.
      *
@@ -66,8 +74,15 @@ public class TaskService {
         dto.setDescription(task.getDescription());
         dto.setStatus(task.getStatus());
         dto.setPriority(task.getPriority());
-        dto.setCreatedAt(task.getCreatedAt());
-        dto.setCompletedAt(task.getCompletedAt());
+        // Convert LocalDateTime (entity) to Instant for unambiguous timezone serialization
+        LocalDateTime created = task.getCreatedAt();
+        if (created != null) {
+            dto.setCreatedAt(created.atZone(ZoneOffset.UTC).toInstant());
+        }
+        LocalDateTime completed = task.getCompletedAt();
+        if (completed != null) {
+            dto.setCompletedAt(completed.atZone(ZoneOffset.UTC).toInstant());
+        }
         return dto;
     }
     
@@ -76,12 +91,13 @@ public class TaskService {
      *
      * @return List of TaskDTOs belonging to current user
      */
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()", unless = "#result == null || #result.isEmpty()")
     public List<TaskDTO> getAllTasks() {
         User user = getCurrentUser();
         // Query database for user's tasks and convert to DTOs using Stream API
         return taskRepository.findByUser(user).stream()
                 .map(this::convertToDTO)  // Method reference for conversion
-                .collect(Collectors.toList());
+                .toList();
     }
     
     /**
@@ -91,6 +107,7 @@ public class TaskService {
      * @return TaskDTO if found and user is authorized
      * @throws RuntimeException if task not found or user unauthorized
      */
+    @Cacheable(value = "taskById", key = "#id")
     public TaskDTO getTaskById(Long id) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -104,20 +121,43 @@ public class TaskService {
         return convertToDTO(task);
     }
     
+    private void evictUserTaskCaches() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Cache tasksCache = cacheManager.getCache("tasksByUser");
+        if (tasksCache != null) {
+            tasksCache.evict(username); // all tasks
+            for (Task.TaskStatus s : Task.TaskStatus.values()) {
+                tasksCache.evict(username + ":status:" + s);
+            }
+            for (Task.TaskPriority p : Task.TaskPriority.values()) {
+                tasksCache.evict(username + ":priority:" + p);
+            }
+        }
+        Cache statsCache = cacheManager.getCache("taskStats");
+        if (statsCache != null) {
+            statsCache.evict(username);
+        }
+    }
+
+    @CachePut(value = "taskById", key = "#result.id")
     public TaskDTO createTask(TaskRequest request) {
         User user = getCurrentUser();
-        
+
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
         task.setStatus(request.getStatus());
         task.setPriority(request.getPriority());
         task.setUser(user);
-        
+
         Task savedTask = taskRepository.save(task);
+        evictUserTaskCaches();
         return convertToDTO(savedTask);
     }
     
+    @Caching(put = {
+            @CachePut(value = "taskById", key = "#id")
+    })
     public TaskDTO updateTask(Long id, TaskRequest request) {
         User user = getCurrentUser();
         Task task = taskRepository.findById(id)
@@ -132,7 +172,7 @@ public class TaskService {
         
         // If status changes to DONE, set completion time
         if (request.getStatus() == Task.TaskStatus.DONE && task.getStatus() != Task.TaskStatus.DONE) {
-            task.setCompletedAt(LocalDateTime.now());
+            task.setCompletedAt(LocalDateTime.now(ZoneOffset.UTC));
         } else if (request.getStatus() != Task.TaskStatus.DONE && task.getStatus() == Task.TaskStatus.DONE) {
             task.setCompletedAt(null);
         }
@@ -141,6 +181,7 @@ public class TaskService {
         task.setPriority(request.getPriority());
         
         Task updatedTask = taskRepository.save(task);
+        evictUserTaskCaches();
         return convertToDTO(updatedTask);
     }
     
@@ -154,22 +195,26 @@ public class TaskService {
         }
         
         taskRepository.delete(task);
+        evictUserTaskCaches();
     }
     
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':status:' + #status", unless = "#result == null || #result.isEmpty()")
     public List<TaskDTO> getTasksByStatus(Task.TaskStatus status) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndStatus(user, status).stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
     
+    @Cacheable(value = "tasksByUser", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName() + ':priority:' + #priority", unless = "#result == null || #result.isEmpty()")
     public List<TaskDTO> getTasksByPriority(Task.TaskPriority priority) {
         User user = getCurrentUser();
         return taskRepository.findByUserAndPriority(user, priority).stream()
                 .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
     
+    @Cacheable(value = "taskStats", key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
     public TaskStatsDTO getTaskStats() {
         User user = getCurrentUser();
         
@@ -188,7 +233,7 @@ public class TaskService {
             // Filter to only include tasks with both timestamps present
             List<Task> tasksWithTimestamps = completedTasksList.stream()
                     .filter(task -> task.getCreatedAt() != null && task.getCompletedAt() != null)
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (!tasksWithTimestamps.isEmpty()) {
                 // Calculate total duration in milliseconds
@@ -206,4 +251,3 @@ public class TaskService {
                 averageCompletionTimeHours, todoTasks, inProgressTasks);
     }
 }
-

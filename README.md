@@ -40,6 +40,12 @@ Password: demo123
 - Visual charts with Chart.js
 - Task distribution by status
 
+### Performance & Caching
+- In-memory caching with Caffeine
+- Optimized task retrieval and statistics
+- Configurable cache TTL and sizes
+- Automatic cache invalidation on updates
+
 ### API Documentation
 - Interactive Swagger UI
 - OpenAPI 3.0 specification
@@ -57,6 +63,7 @@ Password: demo123
 - **Language:** Java 17
 - **Database:** PostgreSQL 15 (Production) / H2 (Development)
 - **Security:** Spring Security + JWT
+- **Caching:** Caffeine (High-performance in-memory cache)
 - **API Documentation:** Springdoc OpenAPI (Swagger)
 - **Build Tool:** Maven
 
@@ -77,26 +84,86 @@ Password: demo123
 ### Architecture Diagram
 
 ```
-┌─────────────────┐
-│   Angular SPA   │
-│   (Frontend)    │
-└────────┬────────┘
-         │ HTTP/REST
-         │ JWT Token
-         ▼
-┌─────────────────┐
-│  Spring Boot    │
-│   (Backend)     │
-│  - JWT Auth     │
-│  - REST API     │
-└────────┬────────┘
-         │ JPA/Hibernate
-         ▼
-┌─────────────────┐
-│   PostgreSQL    │
-│   (Database)    │
-└─────────────────┘
+┌──────────────────────────────────────┐
+│         Frontend Layer               │
+│  ┌────────────────────────────────┐  │
+│  │       Angular 18 SPA           │  │
+│  │  - TypeScript                  │  │
+│  │  - RxJS Observables            │  │
+│  │  - Chart.js Analytics          │  │
+│  │  - Auth Guard & Interceptor    │  │
+│  └────────────────────────────────┘  │
+└──────────────┬───────────────────────┘
+               │
+               │ HTTP/REST API
+               │ Authorization: Bearer JWT
+               │ JSON Payload
+               │
+┌──────────────▼───────────────────────┐
+│         Backend Layer                │
+│  ┌────────────────────────────────┐  │
+│  │      Spring Boot 3.2           │  │
+│  │  - Spring Security + JWT       │  │
+│  │  - Spring Data JPA             │  │
+│  │  - REST Controllers            │  │
+│  │  - Swagger/OpenAPI Docs        │  │
+│  │  - Actuator Monitoring         │  │
+│  └────────────────────────────────┘  │
+│  ┌────────────────────────────────┐  │
+│  │    Caffeine Cache Layer        │  │
+│  │  - tasksByUser (45s TTL)       │  │
+│  │  - taskById (60s TTL)          │  │
+│  │  - taskStats (20s TTL)         │  │
+│  │  - Auto-invalidation           │  │
+│  └────────────────────────────────┘  │
+└──────────────┬───────────────────────┘
+               │
+               │ JPA/Hibernate
+               │ JDBC Connection Pool (HikariCP)
+               │
+┌──────────────▼───────────────────────┐
+│       Persistence Layer              │
+│  ┌────────────────────────────────┐  │
+│  │      PostgreSQL 15             │  │
+│  │  - users table                 │  │
+│  │  - tasks table                 │  │
+│  │  - Indexed queries             │  │
+│  │  - Foreign key constraints     │  │
+│  └────────────────────────────────┘  │
+└──────────────────────────────────────┘
+
+┌──────────────────────────────────────┐
+│         DevOps Layer                 │
+│  - Docker Containerization           │
+│  - Docker Compose (local dev)        │
+│  - Render.com Deployment             │
+│  - GitHub CI/CD                      │
+└──────────────────────────────────────┘
 ```
+
+### Data Flow
+
+1. **User Authentication:**
+   - User logs in via Angular → Backend validates credentials
+   - Backend generates JWT token (24h expiration)
+   - Frontend stores token in localStorage
+   - All subsequent requests include JWT in Authorization header
+
+2. **Task Operations (with Caching):**
+   - **Cache Hit:** Request → Cache → Response (2-5ms)
+   - **Cache Miss:** Request → Database → Cache Store → Response (50-100ms)
+   - **Mutations:** Create/Update/Delete → Cache Invalidation → Database
+
+3. **Security:**
+   - JWT Filter validates token on every request
+   - SecurityContext stores authenticated user
+   - Service layer enforces user isolation
+   - Database queries filtered by user_id
+
+4. **Analytics:**
+   - Stats calculation cached per user
+   - Chart.js renders visualizations
+   - Real-time updates on data changes
 
 ### Project Structure
 
@@ -421,8 +488,10 @@ curl -H "Authorization: Bearer $TOKEN" \
 - PostgreSQL Driver 42.6.0
 - H2 Database (dev)
 - JWT (io.jsonwebtoken 0.12.3)
+- Caffeine Cache 3.1.8
 - Lombok
 - Springdoc OpenAPI 2.3.0
+- Spring Boot Actuator
 
 ### Frontend Technologies
 - Angular 18
